@@ -1,0 +1,41 @@
+{
+  "model_name": "Ridge",
+  "model_type": "regression",
+  "timestamp": "20261106_100330",
+  "metrics": {
+    "mae": 0.1366,
+    "rmse": 0.2885,
+    "mape": 9.9075,
+    "r2": 0.0148,
+    "model": "Ridge",
+    "feature_count": 25
+  },
+  "feature_cols": [
+    "hour",
+    "day_of_week",
+    "month",
+    "is_weekend",
+    "is_peak_hour",
+    "is_holiday",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos",
+    "station_type_enc",
+    "location_type_enc",
+    "power_tier",
+    "num_ports",
+    "power_kw",
+    "lag_1h",
+    "lag_24h",
+    "lag_168h",
+    "rolling_mean_3h",
+    "rolling_mean_6h",
+    "rolling_mean_24h",
+    "rolling_std_3h",
+    "rolling_std_6h"
+  ],
+  "model_file": "regression_Ridge_20261106_100330.joblib"
+}

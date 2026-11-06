@@ -1,0 +1,91 @@
+{
+  "regression_leaderboard": [
+    {
+      "mae": 0.1366,
+      "rmse": 0.2885,
+      "mape": 9.9075,
+      "r2": 0.0148,
+      "model": "Ridge",
+      "feature_count": 25
+    },
+    {
+      "mae": 0.1532,
+      "rmse": 0.2957,
+      "mape": 11.6881,
+      "r2": -0.035,
+      "model": "RandomForest",
+      "feature_count": 25
+    }
+  ],
+  "classification_leaderboard": [
+    {
+      "accuracy": 1.0,
+      "precision_macro": 1.0,
+      "recall_macro": 1.0,
+      "f1_macro": 1.0,
+      "confusion_matrix": [
+        [
+          5,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "class_labels": [
+        "Low",
+        "Medium",
+        "High"
+      ],
+      "roc_auc": null,
+      "model": "LogisticRegression"
+    },
+    {
+      "accuracy": 1.0,
+      "precision_macro": 1.0,
+      "recall_macro": 1.0,
+      "f1_macro": 1.0,
+      "confusion_matrix": [
+        [
+          5,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "class_labels": [
+        "Low",
+        "Medium",
+        "High"
+      ],
+      "roc_auc": null,
+      "model": "RandomForest"
+    }
+  ],
+  "fairness_by_location": {
+    "rural": {
+      "mae": 0.0712,
+      "mean_demand": 1.0377,
+      "relative_mae": 0.0686,
+      "n_samples": 292
+    },
+    "suburban": {
+      "mae": 0.0874,
+      "mean_demand": 1.0441,
+      "relative_mae": 0.0837,
+      "n_samples": 635
+    },
+    "urban": {
+      "mae": 0.1554,
+      "mean_demand": 1.0893,
+      "relative_mae": 0.1426,
+      "n_samples": 2689
+    }
+  },
+  "underserved_count": 0,
+  "total_sessions": 50000,
+  "total_stations": 30
+}

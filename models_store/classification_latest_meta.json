@@ -1,0 +1,40 @@
+{
+  "model_name": "LogisticRegression",
+  "model_type": "classification",
+  "timestamp": "20261106_100448",
+  "metrics": {
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0,
+    "confusion_matrix": [
+      [
+        5,
+        0
+      ],
+      [
+        0,
+        1
+      ]
+    ],
+    "class_labels": [
+      "Low",
+      "Medium",
+      "High"
+    ],
+    "roc_auc": null,
+    "model": "LogisticRegression"
+  },
+  "feature_cols": [
+    "mean_sessions",
+    "std_sessions",
+    "mean_energy",
+    "station_type_enc",
+    "location_type_enc",
+    "power_tier",
+    "num_ports",
+    "power_kw",
+    "mean_utilization"
+  ],
+  "model_file": "classification_LogisticRegression_20261106_100448.joblib"
+}

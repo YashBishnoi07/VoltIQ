@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATA_SOURCE=synthetic
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      - ./data:/app/data
+      - ./models_store:/app/models_store
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
