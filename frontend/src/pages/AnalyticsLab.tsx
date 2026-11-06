@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FlaskConical, CheckCircle, AlertTriangle } from "lucide-react";
+import { FlaskConical, CheckCircle } from "lucide-react";
 import { api } from "../services/api";
 import { HeatmapCell, StatTestResult } from "../types";
 
 export const AnalyticsLab: React.FC = () => {
   const [heatmap, setHeatmap] = useState<HeatmapCell[]>([]);
   const [stats, setStats] = useState<StatTestResult[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [hoveredCell, setHoveredCell] = useState<{ day: string; hour: number; val: number } | null>(null);
 
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -19,8 +19,6 @@ export const AnalyticsLab: React.FC = () => {
         setStats(s);
       } catch (e) {
         console.error(e);
-      } finally {
-        setLoading(false);
       }
     }
     load();
@@ -41,59 +39,86 @@ export const AnalyticsLab: React.FC = () => {
           <span>Analytics & Statistical Lab</span>
         </h1>
         <p className="text-sm text-slate-400">
-          Rigorous hypothesis testing, normality validation, and 7x24 spatio-temporal concurrency heatmaps.
+          Rigorous hypothesis testing, normality validation, and 7×24 diurnal demand heatmap.
         </p>
       </div>
 
-      {/* Heatmap */}
+      {/* Heatmap Section */}
       <div className="glass-panel p-6 rounded-xl space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-orbitron font-semibold text-slate-200">
-            Hour-of-Week Concurrency Matrix (Heatmap)
-          </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="font-orbitron font-semibold text-slate-200">
+              7×24 Day-and-Hour Concurrency Matrix
+            </h3>
+            <p className="text-xs text-slate-400">
+              {hoveredCell ? (
+                <span className="text-cyan-400 font-mono">
+                  {hoveredCell.day} at {hoveredCell.hour}:00 —{" "}
+                  <b>{hoveredCell.val.toFixed(2)} sessions/hr</b>
+                </span>
+              ) : (
+                "Hover over any hour cell to inspect network concurrency volume"
+              )}
+            </p>
+          </div>
           <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
-            <span>Low</span>
-            <div className="flex h-3 w-24 rounded bg-gradient-to-r from-slate-900 via-cyan-900 to-cyan-400"></div>
-            <span>High Peak</span>
+            <span>Low (0)</span>
+            <div className="flex h-3 w-28 rounded bg-gradient-to-r from-slate-900 via-cyan-900 to-cyan-400 border border-slate-800"></div>
+            <span>Peak ({maxVal.toFixed(1)})</span>
           </div>
         </div>
 
-        <div className="overflow-x-auto pb-2">
-          <div className="min-w-[650px] space-y-1">
-            {/* Header hours */}
-            <div className="grid grid-cols-25 gap-1 text-[10px] font-mono text-slate-500 pl-10">
-              {hours.map((h) => (
-                <div key={h} className="text-center">
-                  {h % 3 === 0 ? h : ""}
-                </div>
-              ))}
+        <div className="overflow-x-auto pb-4">
+          <div className="min-w-[760px] space-y-1.5 pt-2">
+            {/* Header: Hour labels */}
+            <div className="flex items-center space-x-2 text-[10px] font-mono text-slate-400">
+              <span className="w-12 text-right pr-2 text-slate-500 font-bold uppercase">Day</span>
+              <div
+                className="flex-1 gap-1"
+                style={{ display: "grid", gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}
+              >
+                {hours.map((h) => (
+                  <div key={h} className="text-center font-mono">
+                    {h % 2 === 0 ? `${h}h` : ""}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Matrix rows */}
-            {days.map((dayName, dow) => (
-              <div key={dayName} className="flex items-center space-x-2">
-                <span className="w-8 text-xs font-mono text-slate-400">{dayName}</span>
-                <div className="grid grid-cols-24 gap-1 flex-1">
-                  {hours.map((h) => {
-                    const val = getHeatmapVal(dow, h);
-                    const opacity = Math.min(Math.max(val / maxVal, 0.1), 1);
-                    return (
-                      <div
-                        key={h}
-                        title={`${dayName} ${h}:00 — ${val.toFixed(2)} sessions/hr`}
-                        className="h-6 rounded-sm transition-all hover:scale-110 cursor-pointer"
-                        style={{
-                          backgroundColor:
-                            val === 0
-                              ? "rgba(15, 23, 42, 0.5)"
-                              : `rgba(0, 240, 255, ${opacity})`,
-                        }}
-                      ></div>
-                    );
-                  })}
+            {/* Matrix rows: Mon -> Sun */}
+            {days.map((dayName, dow) => {
+              return (
+                <div key={dayName} className="flex items-center space-x-2">
+                  <span className="w-12 text-xs font-mono font-semibold text-cyan-300 text-right pr-2">
+                    {dayName}
+                  </span>
+                  <div
+                    className="flex-1 gap-1"
+                    style={{ display: "grid", gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}
+                  >
+                    {hours.map((h) => {
+                      const val = getHeatmapVal(dow, h);
+                      const ratio = maxVal > 0 ? val / maxVal : 0;
+                      return (
+                        <div
+                          key={h}
+                          onMouseEnter={() => setHoveredCell({ day: dayName, hour: h, val })}
+                          onMouseLeave={() => setHoveredCell(null)}
+                          className="h-7 rounded transition-all hover:scale-125 hover:z-10 cursor-pointer border border-slate-900/40"
+                          style={{
+                            backgroundColor:
+                              val === 0
+                                ? "#0E131F"
+                                : `rgba(0, 240, 255, ${Math.max(ratio, 0.15)})`,
+                            boxShadow: ratio > 0.7 ? "0 0 8px rgba(0, 240, 255, 0.4)" : "none",
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

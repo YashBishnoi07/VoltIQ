@@ -22,8 +22,15 @@ export const api = {
     region?: string;
     utilization_class?: string;
   }): Promise<{ stations: Station[]; total: number }> {
-    const query = new URLSearchParams(params as Record<string, string>).toString();
-    const res = await fetch(`${API_BASE}/stations?${query}`);
+    const cleanParams: Record<string, string> = {};
+    if (params) {
+      for (const [key, val] of Object.entries(params)) {
+        if (val) cleanParams[key] = val;
+      }
+    }
+    const query = new URLSearchParams(cleanParams).toString();
+    const url = query ? `${API_BASE}/stations?${query}` : `${API_BASE}/stations`;
+    const res = await fetch(url);
     return res.json();
   },
 
