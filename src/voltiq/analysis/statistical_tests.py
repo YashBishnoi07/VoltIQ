@@ -24,18 +24,19 @@ class TestResult:
 
 
 def test_normality(series: pd.Series, name: str = "variable") -> dict[str, object]:
-    """Shapiro-Wilk (n ≤ 5000) or KS-test for normality."""
+    """Shapiro-Wilk test on sample for distribution normality."""
     data = series.dropna().values
     n = len(data)
 
-    if n <= 5000:
+    # For large samples, take a reproducible 5000-sample slice for Shapiro-Wilk test
+    if n > 5000:
+        rng = np.random.default_rng(42)
+        sample = rng.choice(data, size=5000, replace=False)
+        stat, p = stats.shapiro(sample)
+        test = "Shapiro-Wilk (Sample n=5,000)"
+    else:
         stat, p = stats.shapiro(data)
         test = "Shapiro-Wilk"
-    else:
-        # KS test against a fitted normal for large samples
-        mu, sigma = data.mean(), data.std()
-        stat, p = stats.kstest(data, "norm", args=(mu, sigma))
-        test = "Kolmogorov-Smirnov"
 
     return {
         "variable": name,
