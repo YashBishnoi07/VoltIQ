@@ -17,11 +17,18 @@ class StationService:
 
     async def initialize(self) -> None:
         summary_path = settings.data_processed_dir / "station_summary.csv"
+        if not summary_path.exists():
+            try:
+                from scripts.train import main as run_train
+                run_train()
+            except Exception as e:
+                logger.error("Auto-train failed", error=str(e))
+
         if summary_path.exists():
             self._summary = pd.read_csv(str(summary_path))
             logger.info("Station summary loaded", stations=len(self._summary))
         else:
-            logger.warning("Station summary not found — run train pipeline first")
+            logger.warning("Station summary not found")
             self._summary = pd.DataFrame()
 
     def list_stations(

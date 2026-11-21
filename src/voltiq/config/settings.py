@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     api_port: int = 8000
     api_reload: bool = False
     cors_origins: list[str] = Field(
-        default=["http://localhost:5173", "http://localhost:4173"]
+        default=["*"]
     )
 
     # Logging

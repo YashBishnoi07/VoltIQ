@@ -21,11 +21,19 @@ class AnalyticsService:
 
     async def initialize(self) -> None:
         hourly_path = settings.data_processed_dir / "hourly_features.csv"
+        if not hourly_path.exists():
+            logger.info("Processed features not found — auto-generating dataset via train pipeline")
+            try:
+                from scripts.train import main as run_train
+                run_train()
+            except Exception as e:
+                logger.error("Auto-train failed", error=str(e))
+
         if hourly_path.exists():
             self._hourly = pd.read_csv(str(hourly_path), parse_dates=["hour_bucket"])
             logger.info("Hourly data loaded", rows=len(self._hourly))
         else:
-            logger.warning("Hourly features not found — run train pipeline first")
+            logger.warning("Hourly features not found")
             self._hourly = pd.DataFrame()
 
     def get_overview(self) -> dict[str, Any]:
