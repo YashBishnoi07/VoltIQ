@@ -39,9 +39,9 @@ class PredictionService:
         except FileNotFoundError:
             logger.warning("No classification model found")
 
-        hourly_path = settings.data_processed_dir / "hourly_features.parquet"
+        hourly_path = settings.data_processed_dir / "hourly_features.csv"
         if hourly_path.exists():
-            self._hourly = pd.read_parquet(str(hourly_path), engine=_PARQUET_ENGINE)
+            self._hourly = pd.read_csv(str(hourly_path), parse_dates=["hour_bucket"])
 
         summary_path = settings.models_store_dir / "pipeline_summary.json"
         if summary_path.exists():

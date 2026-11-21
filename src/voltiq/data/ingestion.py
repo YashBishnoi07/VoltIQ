@@ -21,13 +21,13 @@ def load_raw_data(force_regenerate: bool = False) -> tuple[pd.DataFrame, pd.Data
     """
     raw_dir = settings.data_raw_dir
     raw_dir.mkdir(parents=True, exist_ok=True)
-    sessions_path = raw_dir / "sessions.parquet"
-    stations_path = raw_dir / "stations.parquet"
+    sessions_path = raw_dir / "sessions.csv"
+    stations_path = raw_dir / "stations.csv"
 
     if not force_regenerate and sessions_path.exists() and stations_path.exists():
         logger.info("Loading cached raw data", source=str(raw_dir))
-        sessions = read_parquet(sessions_path)
-        stations = read_parquet(stations_path)
+        sessions = pd.read_csv(sessions_path)
+        stations = pd.read_csv(stations_path)
         return sessions, stations
 
     if settings.data_source == "synthetic":
@@ -40,8 +40,8 @@ def load_raw_data(force_regenerate: bool = False) -> tuple[pd.DataFrame, pd.Data
     else:
         sessions, stations = _load_acn_data()
 
-    write_parquet(sessions, sessions_path)
-    write_parquet(stations, stations_path)
+    sessions.to_csv(sessions_path, index=False)
+    stations.to_csv(stations_path, index=False)
     logger.info("Raw data saved", sessions=len(sessions), stations=len(stations))
     return sessions, stations
 
