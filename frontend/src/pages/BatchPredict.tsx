@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FileSpreadsheet, Upload, Download, CheckCircle } from "lucide-react";
 
 export const BatchPredict: React.FC = () => {
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -17,7 +18,7 @@ export const BatchPredict: React.FC = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("http://localhost:8000/predict/batch-csv", {
+      const res = await fetch(`${API_BASE}/predict/batch-csv`, {
         method: "POST",
         body: formData,
       });
